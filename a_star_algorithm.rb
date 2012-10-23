@@ -38,7 +38,11 @@ class AStarAlgorithm
     "↖" => "↘" ,
     "↑" => "↓" ,
     "↗" => "↙" ,
-    "→" => "←" 
+    "→" => "←" ,
+    "↘" => "↖",
+    "↓" => "↑",
+    "↙" => "↗",
+    "←" => "→"
   }
 
   # マップ。 
@@ -57,15 +61,9 @@ class AStarAlgorithm
     "......XX.."
   ]
 
-  def eval_function pos
-    # 評価関数
-    # g + h
-    distance_function(pos) + huristic_function(pos)
-  end
-
   def huristic_function pos
     # ヒューリスティック関数。 h(n)に相当
-    0
+    return Math::sqrt(((@goal[0]-pos[0])**2) + ((@goal[1]-pos[1])**2))
   end
 
   def distance_function pos
@@ -97,7 +95,7 @@ class AStarAlgorithm
 
   def arround_eval pos,count
     # 戻る以外の移動可能場所の評価値を計算する
-    mass = @fix_list[pos] || @unfix_list[pos]
+    mass = @unfix_list[pos] || @fix_list[pos]
     inverce_op = mass.operators[-1] || ""
     Operators.sub(inverce_op,"").each_char do |op|
       # 移動可能なら
@@ -111,26 +109,27 @@ class AStarAlgorithm
   def move_once count
     # 最小のものを移動する
     min_index = @unfix_list.key(
-      @unfix_list.values.delete_if(&:nil?).min do |a,b|
-      return -1 if a.nil?
-      return 1 if b.nil?
+      @unfix_list.values.min do |a,b|
       a.eval_value <=> b.eval_value
       end 
     )
-
     # ゴールか確認
-    if min_index == get_position(Map,"G")
+    if min_index == @goal
       puts "探索に成功しました"
       puts "最短回数は #{@unfix_list[min_index].distance} で、移動方法は"
       puts "#{@unfix_list[min_index].operators}です"
+      puts "detail"
+      pp @unfix_list[min_index]
+      puts "unfix_list"
       pp @unfix_list
+      puts "fix_list"
       pp @fix_list
       exit
     end
 
     # L1 から L2 へ移動
     @fix_list[min_index] = @unfix_list[min_index]
-    @unfix_list[min_index] = nil
+    @unfix_list.delete(min_index)
     arround_eval(min_index,count)
   end
 
@@ -187,7 +186,7 @@ class AStarAlgorithm
         :type => ".",
         :count => count,
         :distance =>  @fix_list[pos].distance + 1,
-        :huristic  => huristic_function(pos)
+        :huristic  => huristic_function(new_pos)
       })
       @unfix_list[new_pos] = new_mass
     end
@@ -195,40 +194,46 @@ class AStarAlgorithm
 
   def update_fix_list pos,op,count
     # L2 に存在する場合の処理
-    mass = @fix_list[pos] || @unfix_list[@pos]
+    new_pos = []
+    new_pos[0] = Fai[op][0] + pos[0]
+    new_pos[1] = Fai[op][1] + pos[1]
+    mass = @fix_list[pos] || @unfix_list[pos]
     new_mass = Mass.new({
       :operators => mass.operators + op,
       :type => ".",
       :count => count,
       :distance =>  mass.distance + 1,
-      :huristic  => huristic_function(pos)
+      :huristic  => huristic_function(new_pos)
     })
-    new_pos = []
-    new_pos[0] = Fai[op][0] + pos[0]
-    new_pos[1] = Fai[op][1] + pos[1]
+    return if @fix_list[new_pos].nil?
     if @fix_list[new_pos].eval_value >= new_mass.eval_value
       # L2 の評価値より、今回の評価値が低い場合、L1へと移動する(iii)
       @unfix_list[new_pos] = new_mass
-      @fix_list[new_pos] = nil
+      @fix_list.delete(new_pos)
     end
   end
 
   def update_unfix_list pos,op,count
     # L1 に存在する場合の処理
-    mass = @fix_list[pos] || @unfix_list[@pos]
+    mass = @unfix_list[pos] || @fix_list[pos]
+    new_pos = []
+    new_pos[0] = Fai[op][0] + pos[0]
+    new_pos[1] = Fai[op][1] + pos[1]
     new_mass = Mass.new({
       :operators => mass.operators + op,
       :type => ".",
       :count => count,
       :distance =>  mass.distance + 1,
-      :huristic  => huristic_function(pos)
+      :huristic  => huristic_function(new_pos)
     })
-    new_pos = []
-    new_pos[0] = Fai[op][0] + pos[0]
-    new_pos[1] = Fai[op][1] + pos[1]
+    return if @unfix_list[new_pos].nil?
     if @unfix_list[new_pos].eval_value >= new_mass.eval_value
       # L1 よりも新しく移動する場合が評価値が低い場合は更新する
+      tm = @unfix_list[new_pos]
       @unfix_list[new_pos] = new_mass
+      p "update"
+      pp tm
+      pp @unfix_list[new_pos]
     end
   end
 end
