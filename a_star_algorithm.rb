@@ -88,7 +88,7 @@ class AStarAlgorithm
     @unfix_list = {
       get_position(Map,"S") => Mass.new({
       :operators => "",
-      :count => 0,
+      :count => "N",
       :distance => 0,
       :huristic  => huristic_function(get_position(Map,"S")),
     })
@@ -98,7 +98,7 @@ class AStarAlgorithm
   def arround_eval pos,count
     # 戻る以外の移動可能場所の評価値を計算する
     mass = @unfix_list[pos] || @fix_list[pos]
-    inverce_op = mass.operators[-1] || ""
+    inverce_op = InverceFai[mass.operators[-1]] || ""
     Operators.sub(inverce_op,"").each_char do |op|
       # 移動可能なら
       if movable?(pos,op)
@@ -132,9 +132,12 @@ class AStarAlgorithm
   end
 
   def run
+    puts movable?([4,3],"↖")
+    p move([4,3],"↖")
     max_count = 10000
     1.upto(max_count) do |count|
       move_once count
+      print_csv "detail_#{count}.csv"
     end
     puts "#{max_count}回の探索では見つかりませんでした"
     exit
