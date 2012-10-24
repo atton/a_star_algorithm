@@ -236,12 +236,14 @@ class AStarAlgorithm
         low = (0..(Width-1)).map{|b|
           pos = [a,b]
           mass = @unfix_list[pos] || @fix_list[pos]
-          str = "[#{pos[0]},#{pos[1]}] "
+          str = "[#{pos[0]},#{pos[1]}] \n"
 
           if mass.nil?
             str += "none"
           else
-            str += mass.eval_value.to_s
+            str += "c: " + mass.count.to_s
+            str += "\n"
+            str += "e: " + mass.eval_value.to_s
           end
         }
       csv << low
