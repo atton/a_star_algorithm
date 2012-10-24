@@ -13,7 +13,8 @@ class AStarAlgorithm
       @distance   = values[:distance]
       @eval_value = @huristic + @distance
     end
-    attr_reader :count, :operators, :huristic, :distance, :eval_value
+    attr_reader :operators, :huristic, :distance, :eval_value
+    attr_accessor :count
   end
 
   # 範囲。 Width x Width のマップを扱うとする
@@ -86,6 +87,7 @@ class AStarAlgorithm
     @unfix_list = {
       get_position(Map,"S") => Mass.new({
       :operators => "",
+      :count => 0,
       :distance => 0,
       :huristic  => huristic_function(get_position(Map,"S")),
     })
@@ -122,6 +124,7 @@ class AStarAlgorithm
     end
 
     # L1 から L2 へ移動
+    @unfix_list[min_index].count = count
     @fix_list[min_index] = @unfix_list[min_index]
     @unfix_list.delete(min_index)
     arround_eval(min_index,count)
@@ -177,7 +180,7 @@ class AStarAlgorithm
       # L1 にも L2 にも存在しない場合(i)
       new_mass = Mass.new({
         :operators => @fix_list[pos].operators + op,
-        :count => count,
+        :count => "",
         :distance =>  @fix_list[pos].distance + 1,
         :huristic  => huristic_function(new_pos)
       })
@@ -193,7 +196,7 @@ class AStarAlgorithm
     mass = @fix_list[pos] 
     new_mass = Mass.new({
       :operators => mass.operators + op,
-      :count => count,
+      :count => "",
       :distance =>  mass.distance + 1,
       :huristic  => huristic_function(new_pos)
     })
@@ -213,7 +216,7 @@ class AStarAlgorithm
     new_pos[1] = Fai[op][1] + pos[1]
     new_mass = Mass.new({
       :operators => mass.operators + op,
-      :count => count,
+      :count => "",
       :distance =>  mass.distance + 1,
       :huristic  => huristic_function(new_pos)
     })
