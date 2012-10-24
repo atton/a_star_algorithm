@@ -7,14 +7,13 @@ class AStarAlgorithm
   class Mass
     # マス用データクラス
     def initialize values
-      @type       = values[:type]
       @count      = values[:count]
       @operators  = values[:operators]
       @huristic   = values[:huristic]
       @distance   = values[:distance]
       @eval_value = @huristic + @distance
     end
-    attr_reader :type, :count, :operators, :huristic, :distance, :eval_value
+    attr_reader :count, :operators, :huristic, :distance, :eval_value
   end
 
   # 範囲。 Width x Width のマップを扱うとする
@@ -87,7 +86,6 @@ class AStarAlgorithm
     @unfix_list = {
       get_position(Map,"S") => Mass.new({
       :operators => "",
-      :type => "S",
       :distance => 0,
       :huristic  => huristic_function(get_position(Map,"S")),
     })
@@ -179,7 +177,6 @@ class AStarAlgorithm
       # L1 にも L2 にも存在しない場合(i)
       new_mass = Mass.new({
         :operators => @fix_list[pos].operators + op,
-        :type => ".",
         :count => count,
         :distance =>  @fix_list[pos].distance + 1,
         :huristic  => huristic_function(new_pos)
@@ -196,7 +193,6 @@ class AStarAlgorithm
     mass = @fix_list[pos] 
     new_mass = Mass.new({
       :operators => mass.operators + op,
-      :type => ".",
       :count => count,
       :distance =>  mass.distance + 1,
       :huristic  => huristic_function(new_pos)
@@ -217,7 +213,6 @@ class AStarAlgorithm
     new_pos[1] = Fai[op][1] + pos[1]
     new_mass = Mass.new({
       :operators => mass.operators + op,
-      :type => ".",
       :count => count,
       :distance =>  mass.distance + 1,
       :huristic  => huristic_function(new_pos)
