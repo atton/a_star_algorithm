@@ -3,6 +3,7 @@
 
 require 'pp'
 require 'CSV'
+
 class AStarAlgorithm
   class Mass
     # マス用データクラス
@@ -119,7 +120,7 @@ class AStarAlgorithm
       puts "探索に成功しました"
       puts "最短回数は #{@unfix_list[min_index].distance} で、移動方法は"
       puts "#{@unfix_list[min_index].operators}です"
-      print_csv "hoge.csv"
+      print_csv "result.csv"
       exit
     end
 
