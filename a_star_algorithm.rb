@@ -119,7 +119,7 @@ class AStarAlgorithm
       puts "探索に成功しました"
       puts "最短回数は #{@unfix_list[min_index].distance} で、移動方法は"
       puts "#{@unfix_list[min_index].operators}です"
-      print_csv
+      print_csv "hoge.csv"
       exit
     end
 
@@ -229,9 +229,11 @@ class AStarAlgorithm
     end
   end
 
-  def print_csv 
-    file_name = './hoge.csv'
-    File.delete(file_name)
+  def print_csv file_name
+
+    if File.exist?(file_name)
+      File.delete(file_name)
+    end
 
     CSV.open(file_name, "ab+") do |csv|
 
