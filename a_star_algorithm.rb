@@ -2,6 +2,7 @@
 # A*アルゴリズムのちょっとした例
 
 require 'pp'
+require 'CSV'
 class AStarAlgorithm
   class Mass
     # マス用データクラス
@@ -118,12 +119,7 @@ class AStarAlgorithm
       puts "探索に成功しました"
       puts "最短回数は #{@unfix_list[min_index].distance} で、移動方法は"
       puts "#{@unfix_list[min_index].operators}です"
-      puts "detail"
-      pp @unfix_list[min_index]
-      puts "unfix_list"
-      pp @unfix_list
-      puts "fix_list"
-      pp @fix_list
+      print_csv
       exit
     end
 
@@ -197,7 +193,7 @@ class AStarAlgorithm
     new_pos = []
     new_pos[0] = Fai[op][0] + pos[0]
     new_pos[1] = Fai[op][1] + pos[1]
-    mass = @fix_list[pos] || @unfix_list[pos]
+    mass = @fix_list[pos] 
     new_mass = Mass.new({
       :operators => mass.operators + op,
       :type => ".",
@@ -215,7 +211,7 @@ class AStarAlgorithm
 
   def update_unfix_list pos,op,count
     # L1 に存在する場合の処理
-    mass = @unfix_list[pos] || @fix_list[pos]
+    mass = @fix_list[pos]
     new_pos = []
     new_pos[0] = Fai[op][0] + pos[0]
     new_pos[1] = Fai[op][1] + pos[1]
@@ -229,12 +225,33 @@ class AStarAlgorithm
     return if @unfix_list[new_pos].nil?
     if @unfix_list[new_pos].eval_value >= new_mass.eval_value
       # L1 よりも新しく移動する場合が評価値が低い場合は更新する
-      tm = @unfix_list[new_pos]
       @unfix_list[new_pos] = new_mass
-      p "update"
-      pp tm
-      pp @unfix_list[new_pos]
     end
+  end
+
+  def print_csv 
+    file_name = './hoge.csv'
+    File.delete(file_name)
+
+    CSV.open(file_name, "ab+") do |csv|
+
+      (0..(Width-1)).each do |a| 
+        low = (0..(Width-1)).map{|b|
+          pos = [a,b]
+          mass = @unfix_list[pos] || @fix_list[pos]
+          str = "[#{pos[0]},#{pos[1]}] "
+
+          if mass.nil?
+            str += "none"
+          else
+            str += mass.eval_value.to_s
+          end
+        }
+      csv << low
+      end
+    end
+
+
   end
 end
 AStarAlgorithm.new.run
