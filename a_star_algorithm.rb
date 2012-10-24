@@ -35,7 +35,7 @@ class AStarAlgorithm
     "←" => [0,-1]
   }
   # 状態遷移関数の逆関数。後戻り防止用に必要。
-  InverceFai = {
+  InverseFai = {
     "↖" => "↘" ,
     "↑" => "↓" ,
     "↗" => "↙" ,
@@ -97,8 +97,8 @@ class AStarAlgorithm
   def arround_eval pos,count
     # 戻る以外の移動可能場所の評価値を計算する
     mass = @unfix_list[pos] || @fix_list[pos]
-    inverce_op = InverceFai[mass.operators[-1]] || ""
-    Operators.sub(inverce_op,"").each_char do |op|
+    inverse_op = InverseFai[mass.operators[-1]] || ""
+    Operators.sub(inverse_op,"").each_char do |op|
       # 移動可能なら
       if movable?(pos,op)
         # 評価したものをリストに追加
