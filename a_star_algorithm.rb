@@ -134,6 +134,8 @@ class AStarAlgorithm
     max_count = 10000
     1.upto(max_count) do |count|
       move_once count
+      # show steps to csv
+      # print_csv "step_#{count}.csv"
     end
     puts "#{max_count}回の探索では見つかりませんでした"
     exit
@@ -176,7 +178,7 @@ class AStarAlgorithm
       update_unfix_list pos,op,count
     else
       # L1 にも L2 にも存在しない場合(i)
-    new_mass = moved_mass(pos,op)
+      new_mass = moved_mass(pos,op)
       @unfix_list[new_pos] = new_mass
     end
   end
@@ -226,7 +228,7 @@ class AStarAlgorithm
   end
 
   def print_csv file_name
-
+    # file_name にcsv で全コマを出力する
     if File.exist?(file_name)
       File.delete(file_name)
     end
@@ -234,24 +236,29 @@ class AStarAlgorithm
     CSV.open(file_name, "ab+") do |csv|
 
       (0..(Width-1)).each do |a| 
-        low = (0..(Width-1)).map{|b|
-          pos = [a,b]
-          mass = @unfix_list[pos] || @fix_list[pos]
-          str = "[#{pos[0]},#{pos[1]}] \n"
-
-          if mass.nil?
-            str += "none"
-          else
-            str += "c: " + mass.count.to_s
-            str += "\n"
-            str += "e: " + mass.eval_value.to_s
-          end
-        }
-      csv << low
+        row = get_csv_row(a)
+        csv << row
       end
     end
+  end
 
+  def get_csv_row row_num
+    # 指定行のcsv用データを返す
+    (0..(Width-1)).map do |colunm_num|
+      pos = [row_num,colunm_num]
+      mass = @unfix_list[pos] || @fix_list[pos]
 
+      str = "[#{pos[0]},#{pos[1]}] "
+      str += Map[row_num][colunm_num] + "\n"
+
+      if mass.nil?
+        str += "none"
+      else
+        str += "c: " + mass.count.to_s
+        str += "\n"
+        str += "e: " + mass.eval_value.to_s
+      end
+    end
   end
 end
 AStarAlgorithm.new.run
