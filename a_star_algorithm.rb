@@ -206,6 +206,7 @@ class AStarAlgorithm
   end
 
   def move pos, op
+    # オペレータを適用後の座標を返す
     new_pos = []
     new_pos[0] = Fai[op][0] + pos[0]
     new_pos[1] = Fai[op][1] + pos[1]
@@ -213,6 +214,7 @@ class AStarAlgorithm
   end
 
   def moved_mass pos,op
+    # オペレータを適用後のマス情報を返す
     new_pos = move(pos,op)
     mass = @fix_list[pos] 
     new_mass = Mass.new({
