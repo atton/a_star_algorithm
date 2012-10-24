@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 # A*アルゴリズムのちょっとした例
 
-require 'pp'
 require 'CSV'
 
 class AStarAlgorithm
@@ -132,12 +131,9 @@ class AStarAlgorithm
   end
 
   def run
-    puts movable?([4,3],"↖")
-    p move([4,3],"↖")
     max_count = 10000
     1.upto(max_count) do |count|
       move_once count
-      print_csv "detail_#{count}.csv"
     end
     puts "#{max_count}回の探索では見つかりませんでした"
     exit
