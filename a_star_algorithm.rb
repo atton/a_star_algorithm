@@ -108,6 +108,13 @@ class AStarAlgorithm
   end
 
   def move_once count
+    
+    # L1 が空なら探索失敗
+    if @unfix_list.empty?
+      puts "探索に失敗しました。探索対象がありません。"
+      exit
+    end
+
     # 最小のものを移動する
     min_index = @unfix_list.key(
       @unfix_list.values.min do |a,b|
@@ -145,8 +152,7 @@ class AStarAlgorithm
   private
 
   def get_position map,char
-    # stub
-
+    # map の中から char のある位置を返す
     (0..(Width-1)).each do |col|
       char_pos = Map[col].index(char)
       if char_pos
