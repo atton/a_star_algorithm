@@ -166,9 +166,7 @@ class AStarAlgorithm
 
   def insert_list pos,op,count
     # リストに追加する
-    new_pos = []
-    new_pos[0] = Fai[op][0] + pos[0]
-    new_pos[1] = Fai[op][1] + pos[1]
+    new_pos = move(pos,op)
 
     if @fix_list.has_key?(new_pos)
       # L2 に存在する場合
@@ -178,28 +176,15 @@ class AStarAlgorithm
       update_unfix_list pos,op,count
     else
       # L1 にも L2 にも存在しない場合(i)
-      new_mass = Mass.new({
-        :operators => @fix_list[pos].operators + op,
-        :count => "",
-        :distance =>  @fix_list[pos].distance + 1,
-        :huristic  => huristic_function(new_pos)
-      })
+    new_mass = moved_mass(pos,op)
       @unfix_list[new_pos] = new_mass
     end
   end
 
   def update_fix_list pos,op,count
     # L2 に存在する場合の処理
-    new_pos = []
-    new_pos[0] = Fai[op][0] + pos[0]
-    new_pos[1] = Fai[op][1] + pos[1]
-    mass = @fix_list[pos] 
-    new_mass = Mass.new({
-      :operators => mass.operators + op,
-      :count => "",
-      :distance =>  mass.distance + 1,
-      :huristic  => huristic_function(new_pos)
-    })
+    new_pos = move(pos,op)
+    new_mass = moved_mass(pos,op)
     return if @fix_list[new_pos].nil?
     if @fix_list[new_pos].eval_value >= new_mass.eval_value
       # L2 の評価値より、今回の評価値が低い場合、L1へと移動する(iii)
@@ -211,20 +196,31 @@ class AStarAlgorithm
   def update_unfix_list pos,op,count
     # L1 に存在する場合の処理
     mass = @fix_list[pos]
+    new_pos = move(pos,op)
+    new_mass = moved_mass(pos,op)
+    return if @unfix_list[new_pos].nil?
+    if @unfix_list[new_pos].eval_value >= new_mass.eval_value
+      # L1 よりも新しく移動する場合が評価値が低い場合は更新する
+      @unfix_list[new_pos] = new_mass
+    end
+  end
+
+  def move pos, op
     new_pos = []
     new_pos[0] = Fai[op][0] + pos[0]
     new_pos[1] = Fai[op][1] + pos[1]
+    new_pos
+  end
+
+  def moved_mass pos,op
+    new_pos = move(pos,op)
+    mass = @fix_list[pos] 
     new_mass = Mass.new({
       :operators => mass.operators + op,
       :count => "",
       :distance =>  mass.distance + 1,
       :huristic  => huristic_function(new_pos)
     })
-    return if @unfix_list[new_pos].nil?
-    if @unfix_list[new_pos].eval_value >= new_mass.eval_value
-      # L1 よりも新しく移動する場合が評価値が低い場合は更新する
-      @unfix_list[new_pos] = new_mass
-    end
   end
 
   def print_csv file_name
