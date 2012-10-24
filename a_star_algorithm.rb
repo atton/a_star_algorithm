@@ -146,14 +146,15 @@ class AStarAlgorithm
 
   def get_position map,char
     # stub
-    if char == "G"
-      return [1,6]
-    elsif char == "S"
-      return [5,4]
-    else
-      puts "unknown char"
-      exit
+
+    (0..(Width-1)).each do |col|
+      char_pos = Map[col].index(char)
+      if char_pos
+        return [col,char_pos]
+      end
     end
+    puts "not fouund '#{char}' in map"
+    exit
   end
 
   def movable? pos,op
@@ -234,9 +235,8 @@ class AStarAlgorithm
     end
 
     CSV.open(file_name, "ab+") do |csv|
-
-      (0..(Width-1)).each do |a| 
-        row = get_csv_row(a)
+      (0..(Width-1)).each do |row_num| 
+        row = get_csv_row(row_num)
         csv << row
       end
     end
