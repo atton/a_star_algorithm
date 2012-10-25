@@ -231,7 +231,7 @@ class AStarAlgorithm
   end
 
   def print_csv file_name
-    # file_name にcsv で全コマを出力する
+    # file_name に csv で全コマを出力する
     if File.exist?(file_name)
       File.delete(file_name)
     end
@@ -247,6 +247,11 @@ class AStarAlgorithm
   def get_csv_row row_num
     # 指定行のcsv用データを返す
     (0..(Width-1)).map do |colunm_num|
+      get_mass_string row_num, colunm_num
+    end
+  end
+
+  def get_mass_string row_num, colunm_num
       pos = [row_num,colunm_num]
       mass = @unfix_list[pos] || @fix_list[pos]
 
@@ -260,7 +265,6 @@ class AStarAlgorithm
         str += "\n"
         str += "f: " + format("%.3f",mass.eval_value)
       end
-    end
   end
 end
 AStarAlgorithm.new.run
