@@ -69,12 +69,8 @@ class AStarAlgorithm
 
   def distance_function pos
     # 出発点からの距離。 g(n)に相当
-    if @fix_list.has_key?(pos)
-      return @fix_list[pos][:distance]
-    end
-    if @unfix_list.has_key?(pos)
-      return @unfix_list[pos][:distance]
-    end
+    mass = @fix_list[pos] || @unfix_list[pos]
+    return mass[:distance]
     puts "#{pos}はリストに存在していません"
     exit
   end
@@ -254,15 +250,15 @@ class AStarAlgorithm
       pos = [row_num,colunm_num]
       mass = @unfix_list[pos] || @fix_list[pos]
 
-      str = "[#{pos[0]},#{pos[1]}] "
-      str += Map[row_num][colunm_num] + "\n"
+      str = "p: [#{pos[0]},#{pos[1]}]\n"
+      str += "t: " + Map[row_num][colunm_num] + "\n"
 
       if mass.nil?
-        str += "none"
+        str += "none\n"
       else
         str += "c: " + mass.count.to_s
         str += "\n"
-        str += "e: " + mass.eval_value.to_s
+        str += "f: " + format("%.3f",mass.eval_value)
       end
     end
   end
