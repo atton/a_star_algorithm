@@ -104,7 +104,7 @@ class AStarAlgorithm
   end
 
   def move_once count
-    
+
     # L1 が空なら探索失敗
     if @unfix_list.empty?
       puts "探索に失敗しました。探索対象がありません。"
@@ -122,7 +122,10 @@ class AStarAlgorithm
       puts "探索に成功しました"
       puts "最短回数は #{@unfix_list[min_index].distance} で、移動方法は"
       puts "#{@unfix_list[min_index].operators}です"
-      print_csv "result.csv"
+      # CSV出力
+       print_csv "result.csv"
+      # TeX用table出力
+      # print_tex_table "result.tex"
       exit
     end
 
@@ -224,7 +227,7 @@ class AStarAlgorithm
     mass = @fix_list[pos] 
     new_mass = Mass.new({
       :operators => mass.operators + op,
-      :count => "",
+      :count => nil,
       :distance =>  mass.distance + 1,
       :huristic  => huristic_function(new_pos)
     })
@@ -251,20 +254,68 @@ class AStarAlgorithm
     end
   end
 
-  def get_mass_string row_num, colunm_num
-      pos = [row_num,colunm_num]
-      mass = @unfix_list[pos] || @fix_list[pos]
+  def print_tex_table file_name
+    if File.exist?(file_name)
+      File.delete(file_name)
+    end
 
-      str = "p: [#{pos[0]},#{pos[1]}]\n"
-      str += "t: " + Map[row_num][colunm_num] + "\n"
+    File.open(file_name, "w") do |file|
 
-      if mass.nil?
-        str += "none\n"
-      else
-        str += "c: " + mass.count.to_s
-        str += "\n"
-        str += "f: " + format("%.3f",mass.eval_value)
+      (0..(Width-1)).each do |colunm_num|
+        (0..(Width-1)).each do  |row_num|
+          data = get_mass_string row_num, colunm_num
+          file << data.chomp.gsub("\n", " && ")
+        end
+        file <<  " \\\\\n"
       end
+    end
+
+  end
+
+  def get_mass_string row_num, colunm_num
+    # 指定マスのデータ文字列を返す
+    str = get_mass_pos row_num, colunm_num
+    str += "\n"
+
+    str += get_mass_type row_num, colunm_num
+    str += "\n"
+
+    str += get_mass_count row_num,colunm_num
+    str += "\n"
+
+    str += get_mass_eval_value row_num, colunm_num
+  end
+
+  def get_mass_pos row_num, colunm_num
+    # 指定マスの位置を返す
+    "p: [#{row_num},#{colunm_num}]"
+  end
+
+  def get_mass_type row_num, colunm_num
+    # 指定マスの種類を返す
+    "t: " + Map[row_num][colunm_num]
+  end
+
+  def get_mass_count row_num, colunm_num
+    # 指定マスのカウントを返す
+    pos = [row_num,colunm_num]
+    mass = @unfix_list[pos] || @fix_list[pos]
+    if mass.nil?
+      return "c: none"
+    else
+      return "c: " + (mass.count || "not moved").to_s
+    end
+  end
+
+  def get_mass_eval_value row_num, colunm_num
+    # 指定マスの評価値を返す
+    pos = [row_num,colunm_num]
+    mass = @unfix_list[pos] || @fix_list[pos]
+    if mass.nil?
+      return "f: none"
+    else
+      return "f: " + format("%.3f",mass.eval_value)
+    end
   end
 end
 AStarAlgorithm.new.run
