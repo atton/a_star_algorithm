@@ -123,9 +123,9 @@ class AStarAlgorithm
       puts "最短回数は #{@unfix_list[min_index].distance} で、移動方法は"
       puts "#{@unfix_list[min_index].operators}です"
       # CSV出力
-       print_csv "result.csv"
+      # print_csv "result.csv"
       # TeX用table出力
-      # print_tex_table "result.tex"
+      print_tex_table "result.tex"
       exit
     end
 
@@ -259,14 +259,18 @@ class AStarAlgorithm
       File.delete(file_name)
     end
 
-    File.open(file_name, "w") do |file|
+    funcs = [:get_mass_pos, :get_mass_type, :get_mass_count, :get_mass_eval_value ]
 
+    File.open(file_name, "w") do |file|
       (0..(Width-1)).each do |colunm_num|
-        (0..(Width-1)).each do  |row_num|
-          data = get_mass_string row_num, colunm_num
-          file << data.chomp.gsub("\n", " && ")
+
+        funcs.each do |f|
+          data = (0..(Width-1)).map { |row_num|
+            send f, row_num, colunm_num
+          }.join(" & ")
+          file <<  data << " \\\\\n"
         end
-        file <<  " \\\\\n"
+        file << "\\\hline" << "\n"
       end
     end
 
@@ -303,7 +307,7 @@ class AStarAlgorithm
     if mass.nil?
       return "c: none"
     else
-      return "c: " + (mass.count || "not moved").to_s
+      return "c: " + (mass.count || "none").to_s
     end
   end
 
