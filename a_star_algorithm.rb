@@ -104,7 +104,6 @@ class AStarAlgorithm
   end
 
   def move_once count
-
     # L1 が空なら探索失敗
     if @unfix_list.empty?
       puts "探索に失敗しました。探索対象がありません。"
@@ -147,7 +146,7 @@ class AStarAlgorithm
     exit
   end
 
-  # support function
+  # support functions
   private
 
   def get_position map,char
@@ -322,4 +321,6 @@ class AStarAlgorithm
     end
   end
 end
+
+# 実行
 AStarAlgorithm.new.run
