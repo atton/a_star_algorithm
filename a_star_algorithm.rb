@@ -258,7 +258,9 @@ class AStarAlgorithm
       File.delete(file_name)
     end
 
-    funcs = [:get_mass_pos, :get_mass_type, :get_mass_count, :get_mass_eval_value ]
+    funcs = [:get_mass_pos, :get_mass_type, :get_mass_arrow, :get_mass_count, :get_mass_eval_value ]
+    # TeX が斜め矢印に対応してないので今回は消しておく
+    funcs.delete(:get_mass_arrow)
 
     File.open(file_name, "w") do |file|
       (0..(Width-1)).each do |colunm_num|
@@ -283,6 +285,9 @@ class AStarAlgorithm
     str += get_mass_type row_num, colunm_num
     str += "\n"
 
+    str += get_mass_arrow row_num, colunm_num
+    str += "\n"
+
     str += get_mass_count row_num,colunm_num
     str += "\n"
 
@@ -297,6 +302,17 @@ class AStarAlgorithm
   def get_mass_type row_num, colunm_num
     # 指定マスの種類を返す
     "t: " + Map[row_num][colunm_num]
+  end
+
+  def get_mass_arrow row_num, colunm_num
+    # 指定マスへの矢印を返す
+    pos = [row_num,colunm_num]
+    mass = @unfix_list[pos] || @fix_list[pos]
+    if mass.nil?
+      return "\n"
+    else
+      return (mass.operators[-1] || "\n").to_s
+    end
   end
 
   def get_mass_count row_num, colunm_num
