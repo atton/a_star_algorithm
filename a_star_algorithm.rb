@@ -122,9 +122,9 @@ class AStarAlgorithm
       puts "最短回数は #{@unfix_list[min_index].distance} で、移動方法は"
       puts "#{@unfix_list[min_index].operators}です"
       # CSV出力
-      # print_csv "result.csv"
+      print_csv "result.csv"
       # TeX用table出力
-      print_tex_table "result.tex"
+      # print_tex_table "result.tex"
       exit
     end
 
